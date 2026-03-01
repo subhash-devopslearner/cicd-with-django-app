@@ -8,28 +8,27 @@ on:
 
 jobs:
   test:
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Install Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5 # Updated to v5 for better performance
         with:
-          python-version: '3.14'
+          python-version: '3.12' # 3.14 is experimental; 3.12/3.13 is current stable
+          cache: 'pip' # Automatically caches your dependencies
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Test Django
+      - name: Run Django Tests
+        env:
+          # Use a dummy secret key for testing to avoid errors
+          SECRET_KEY: "ci-test-key"
+          DEBUG: "False"
         run: | 
-          python3 manage.py runserver
-          sleep 3
-          curl http://localhost:8000
-
-
-
-  
+          python manage.py test # This is the standard way to test Django
