@@ -11,12 +11,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
-import environ
-
-env = environ.Env(
-    # set casting, and default value
-    DEBUG=(bool, False) 
-)
+import os
+from decouple import config, Csv, RepositoryEnv, Config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,18 +21,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-nxe0q3ui99035)i+ny0!9%ss038&6-n@ua&wm5v2a&9qlnh046'
+# Secret key from .env (fallback only in development, avoid defaulting in production)
+SECRET_KEY = config(
+    'DJANGO_SECRET_KEY', 
+    default='django-insecure-$a@_t*$x^162%zd6$r6$2q=g50*ekhpox(_!jk-l*00kaf$*nf'
+)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
+# Debug mode
+DEBUG = config('DJANGO_DEBUG', default=True, cast=bool)
 
-# This will now correctly turn the STRING "True" into the BOOLEAN True
-DEBUG = env('DEBUG')
-
-
-#ALLOWED_HOSTS = []
-ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+# Allowed hosts (comma-separated in .env)
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
 
 
 # Application definition
