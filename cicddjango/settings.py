@@ -23,15 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Secret key from .env (fallback only in development, avoid defaulting in production)
 SECRET_KEY = config(
-    'DJANGO_SECRET_KEY', 
+    'SECRET_KEY', 
     default='django-insecure-$a@_t*$x^162%zd6$r6$2q=g50*ekhpox(_!jk-l*00kaf$*nf'
 )
 
 # Debug mode
-DEBUG = config('DJANGO_DEBUG', default=True, cast=bool)
+#DEBUG = config('DJANGO_DEBUG', default=True, cast=bool)
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Allowed hosts (comma-separated in .env)
-ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
 
 
 # Application definition
@@ -79,13 +80,32 @@ WSGI_APPLICATION = 'cicddjango.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+# Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'mydb'),
+        'USER': os.getenv('DB_USER', 'myuser'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'mypassword'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
+# Redis Cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': os.getenv('REDIS_URL', 'redis://localhost:6379/0'),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
