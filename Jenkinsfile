@@ -1,67 +1,39 @@
 pipeline {
-    
     agent any
-    
-    options {
-        // This stops Jenkins from automatically cloning the repo at the start
-        skipDefaultCheckout() 
-    }
-    
-    parameters {
-        // 1. Dropdown for branches
-        choice(
-            name: 'GIT_BRANCH', 
-            choices: ['development', 'main'], 
-            description: 'Select the branch to build'
-        )
-    }
 
     stages {
-        stage('Checkout code'){
+
+        stage('Checkout') {
             steps {
-                git branch: "${params.GIT_BRANCH}", url: 'https://github.com/subhash-devopslearner/cicd-with-django-app.git'
+                checkout scm
             }
         }
 
-        stage('Running test'){
-            agent { 
-                docker {
-                    image 'python:3.12-slim'
-                    // IMPORTANT: This mounts the Git code into the container
-                    reuseNode true 
-                } 
-            }
-            
-            steps{
+        stage('Run Tests') {
+            steps {
                 sh '''
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                python manage.py test
+                    docker-compose run --rm web python manage.py test
                 '''
-            }           
+            }
         }
 
-        stage('Build Docker image'){
-            // when {
-            //     branch 'main'
-            // }
-            when {
-            // This checks what YOU selected in the dropdown
-            expression { params.GIT_BRANCH == 'main' }
+        stage('Build & Start Services') {
+            steps {
+                sh 'docker-compose up -d --build'
             }
-            
-            steps{
-                sh 'docker build -t cicd-django .'
+        }
+
+        stage('Run Migrations') {
+            steps {
+                sh 'docker-compose exec -T web python manage.py migrate'
             }
-        }        
+        }
+
     }
 
     post {
-        success {
-            echo 'Pipeline successful.'
-        }
-        failure {
-            echo 'Pipeline failed.'
+        always {
+            sh 'docker-compose down'
         }
     }
 }
