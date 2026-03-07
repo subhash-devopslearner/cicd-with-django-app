@@ -12,20 +12,20 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                    docker-compose run --rm web python manage.py test
+                    docker compose run --rm web python manage.py test
                 '''
             }
         }
 
         stage('Build & Start Services') {
             steps {
-                sh 'docker-compose up -d --build'
+                sh 'docker compose up -d --build'
             }
         }
 
         stage('Run Migrations') {
             steps {
-                sh 'docker-compose exec -T web python manage.py migrate'
+                sh 'docker compose exec -T web python manage.py migrate'
             }
         }
 
@@ -33,7 +33,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker-compose down'
+            sh 'docker compose down'
         }
     }
 }
