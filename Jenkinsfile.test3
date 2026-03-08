@@ -15,6 +15,7 @@ pipeline {
                 echo '🐳 Testing Docker...'
                 sh 'docker --version'
                 sh 'docker compose --version'
+                sh 'docker run --rm hello-world'
             }
         }
 
@@ -25,16 +26,16 @@ pipeline {
             }
         }
 
-        // New settings file used to test django
         stage('Run Tests') {
             steps {
                 echo '🧪 Running Django tests...'
                 sh '''
                     docker run --rm \
-                        -e SECRET_KEY=test-secret-key \
+                        -e TESTING=True \
                         -e DEBUG=True \
+                        -e SECRET_KEY=test-secret-key \
                         django-app:latest \
-                        python manage.py test --settings=cicddjango.settings_test
+                        python manage.py test
                 '''
             }
         }
