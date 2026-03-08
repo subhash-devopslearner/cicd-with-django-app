@@ -26,8 +26,6 @@ pipeline {
                 postgres:15
 
                 sleep 5
-
-                docker run 
                 
                 docker run --rm \
                 -- name test-django \
