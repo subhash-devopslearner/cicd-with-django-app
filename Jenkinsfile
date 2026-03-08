@@ -10,12 +10,12 @@ pipeline {
 
         stage('Build Django docker image'){
             steps{
-                'docker build -t django_demo:latest .'
+                sh 'docker build -t django_demo:latest .'
             }
         }
         stage('Run Postgres Container'){
             steps{
-                sh'''
+                sh '''
                 docker network create test-network 
                 docker run -d \
                 -- name test-postgres \
