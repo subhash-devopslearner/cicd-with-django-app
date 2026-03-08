@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo '📥 Checking out code...'
+                checkout scm
+            }
+        }
+
+        stage('Docker Test') {
+            steps {
+                echo '🐳 Testing Docker...'
+                sh 'docker --version'
+                sh 'docker compose --version'
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                echo '🔨 Building Django image...'
+                sh 'docker build -t django-app:latest .'
+            }
+        }
+
+        // New settings file used to test django
+        stage('Run Tests') {
+            steps {
+                echo '🧪 Running Django tests...'
+                sh '''
+                    docker run --rm \
+                        -e SECRET_KEY=test-secret-key \
+                        -e DEBUG=True \
+                        django-app:latest \
+                        python manage.py test --settings=cicddjango.settings_test
+                '''
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo '✅ Pipeline passed!'
+        }
+        failure {
+            echo '❌ Pipeline failed!'
+        }
+        always {
+            echo '🧹 Cleaning up...'
+            sh 'docker rmi django-app:latest || true'
+        }
+    }
+}
