@@ -38,20 +38,20 @@ pipeline {
                     cp /var/lib/jenkins/.env .env
 
                     # Stop existing containers
-                    docker compose down
+                    docker-compose down
 
                     # Start all services
-                    docker compose up -d --build
+                    docker-compose up -d --build
 
                     # Wait for db to be healthy
                     echo "Waiting for database..."
                     sleep 10
 
                     # Run migrations
-                    docker compose exec -T web python manage.py migrate
+                    docker-compose exec -T web python manage.py migrate
 
                     # Collect static files
-                    docker compose exec -T web python manage.py collectstatic --noinput
+                    docker-compose exec -T web python manage.py collectstatic --noinput
                 '''
             }
         }
@@ -64,7 +64,7 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed!'
-            sh 'docker compose logs'
+            sh 'docker-compose logs'
         }
         always {
             echo '🧹 Cleaning up unused images...'
