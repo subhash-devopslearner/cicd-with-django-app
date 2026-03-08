@@ -14,7 +14,7 @@ pipeline {
             steps {
                 echo '🐳 Testing Docker...'
                 sh 'docker --version'
-                sh 'docker compose version'
+                sh 'docker compose --version'
                 sh 'docker run --rm hello-world'
             }
         }
