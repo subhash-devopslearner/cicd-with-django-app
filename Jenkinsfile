@@ -18,8 +18,8 @@ pipeline {
                 sh '''
                 docker network create test-network 
                 docker run -d \
-                -- name test-postgres \
-                -- network test-network \
+                --name test-postgres \
+                --network test-network \
                 -e POSTGRES_DB=testdb \
                 -e POSTGES_USER=testuser \
                 -e POSTGRES_PASSWORD=testpass \
@@ -28,8 +28,8 @@ pipeline {
                 sleep 5
                 
                 docker run --rm \
-                -- name test-django \
-                -- network test-network \
+                --name test-django \
+                --network test-network \
                 -e DEBUG=true \
                 -e SECRET_KEY=my-secret-key \
                 -e DB_NAME=testdb \
