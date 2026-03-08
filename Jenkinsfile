@@ -35,7 +35,7 @@ pipeline {
                 echo '🚀 Deploying with Docker Compose...'
                 sh '''
                     # Copy .env from VM home directory
-                    cp /home/subhash/.env .env
+                    cp /var/lib/jenkins/.env .env
 
                     # Stop existing containers
                     docker compose down
