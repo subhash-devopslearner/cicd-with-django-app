@@ -21,7 +21,7 @@ pipeline {
                 --name test-postgres \
                 --network test-network \
                 -e POSTGRES_DB=testdb \
-                -e POSTGES_USER=testuser \
+                -e POSTGRES_USER=testuser \
                 -e POSTGRES_PASSWORD=testpass \
                 postgres:15
 
