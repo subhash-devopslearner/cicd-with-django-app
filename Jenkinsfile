@@ -5,35 +5,52 @@ pipeline {
 
         stage('Checkout') {
             steps {
+                echo '📥 Checking out code...'
                 checkout scm
+            }
+        }
+
+        stage('Docker Test') {
+            steps {
+                echo '🐳 Testing Docker...'
+                sh 'docker --version'
+                sh 'docker compose version'
+                sh 'docker run --rm hello-world'
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                echo '🔨 Building Django image...'
+                sh 'docker build -t django-app:latest .'
             }
         }
 
         stage('Run Tests') {
             steps {
+                echo '🧪 Running Django tests...'
                 sh '''
-                    docker compose run --rm web python manage.py test
+                    docker run --rm \
+                        -e DEBUG=True \
+                        -e SECRET_KEY=test-secret-key \
+                        django-app:latest \
+                        python manage.py test
                 '''
-            }
-        }
-
-        stage('Build & Start Services') {
-            steps {
-                sh 'docker compose up -d --build'
-            }
-        }
-
-        stage('Run Migrations') {
-            steps {
-                sh 'docker compose exec -T web python manage.py migrate'
             }
         }
 
     }
 
     post {
+        success {
+            echo '✅ Pipeline passed!'
+        }
+        failure {
+            echo '❌ Pipeline failed!'
+        }
         always {
-            sh 'docker compose down'
+            echo '🧹 Cleaning up...'
+            sh 'docker rmi django-app:latest || true'
         }
     }
 }
