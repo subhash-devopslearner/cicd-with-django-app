@@ -31,6 +31,7 @@ pipeline {
                 echo '🧪 Running Django tests...'
                 sh '''
                     docker run --rm \
+                        -e TESTING=True \
                         -e DEBUG=True \
                         -e SECRET_KEY=test-secret-key \
                         django-app:latest \
