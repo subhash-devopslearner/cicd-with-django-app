@@ -33,9 +33,12 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 echo '🚀 Deploying with Docker Compose...'
-                sh '''
-                    # Copy .env from VM home directory
-                    cp /var/lib/jenkins/.env .env
+
+                withCredentials([file(credentialsId: 'Django_ENV_FILE', variable: 'DJANGO_ENV')]) {
+                       
+                    sh '''
+                    # Copy .env file from Jenkins credentials to workspace
+                    cp $DJANGO_ENV .env                  
 
                     # Stop existing containers
                     docker-compose down
@@ -53,6 +56,8 @@ pipeline {
                     # Collect static files
                     docker-compose exec -T web python manage.py collectstatic --noinput
                 '''
+                }
+                
             }
         }
 
@@ -68,6 +73,7 @@ pipeline {
         }
         always {
             echo '🧹 Cleaning up unused images...'
+            sh 'rm -f .env'
             sh 'docker image prune -f'
         }
     }
