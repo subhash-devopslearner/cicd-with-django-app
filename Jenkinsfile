@@ -50,7 +50,7 @@ pipeline {
                     cp $DJANGO_ENV_STAGING .env                  
 
                     # Stop existing containers
-                    docker compose down
+                    # docker compose down
 
                     # Start all services
                     docker compose -f docker-compose-staging.yml up --build
@@ -84,7 +84,7 @@ pipeline {
                     cp $DJANGO_ENV_PRODUCTION .env               
 
                     # Stop existing containers
-                    docker compose down
+                    # docker compose down
 
                     # Start all services
                     docker compose -f docker-compose-production.yml up -d --build
@@ -112,12 +112,12 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed!'
-            sh 'docker compose logs'
+            //sh 'docker compose logs'
         }
         always {
             echo '🧹 Cleaning up unused images...'
             sh 'rm -f .env'
-            sh 'docker image prune -f'
+            //sh 'docker image prune -f'
         }
     }
 }
