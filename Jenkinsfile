@@ -9,6 +9,12 @@ pipeline {
                 checkout scm                
             }
         }
+        stage('Get Branch Info'){
+            steps{
+                echo '📥 Getting branch info...'
+                echo "${env.GIT_BRANCH}"
+            }
+        }
 
         stage('Build Image') {
             steps {
