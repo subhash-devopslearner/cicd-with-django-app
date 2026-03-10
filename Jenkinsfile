@@ -7,6 +7,9 @@ pipeline {
             steps {
                 echo '📥 Checking out code...'
                 checkout scm
+
+                echo "📂 Project branch: $BRANCH_NAME"
+                
             }
         }
 
