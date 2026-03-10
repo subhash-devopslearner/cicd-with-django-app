@@ -32,7 +32,7 @@ pipeline {
 
         stage('Deploy to staging environment with Docker Compose') {
             when {
-                branch 'development'
+                expression { env.BRANCH_NAME == 'development' }
             }
             steps {
                 echo '🚀 Deploying with Docker Compose...'
@@ -65,7 +65,7 @@ pipeline {
         }
         stage('Deploy to production environment with Docker Compose') {
             when {
-                branch 'main'
+                expression { env.BRANCH_NAME == 'main' }
             }
             steps {
                 echo '🚀 Deploying with Docker Compose...'
