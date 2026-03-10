@@ -33,11 +33,12 @@ pipeline {
         stage('Deploy to staging environment with Docker Compose') {
             when {
                 expression { env.BRANCH_NAME == 'origin/development' }
+                //expression { return scm.branches[0].name == 'development' || env.GIT_BRANCH == 'origin/development' } {
             }
             steps {
                 echo '🚀 Deploying with Docker Compose...'
                 
-                //expression { return scm.branches[0].name == 'development' || env.GIT_BRANCH == 'origin/development' } {
+                withCredentials([file(credentialsId: 'Django_ENV_PRODUCTION', variable: 'DJANGO_ENV_PRODUCTION')]) {
                        
                     sh '''
                     # Copy .env file from Jenkins credentials to workspace
@@ -58,11 +59,12 @@ pipeline {
 
                     # Collect static files
                     docker compose exec -T web python manage.py collectstatic --noinput
-                '''
+                    '''
                 }
-                
             }
+                
         }
+        
         stage('Deploy to production environment with Docker Compose') {
             when {
                 expression { GIT_BRANCH == 'origin/main' }
