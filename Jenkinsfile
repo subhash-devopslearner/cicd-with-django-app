@@ -47,13 +47,13 @@ pipeline {
                        
                     sh '''
                     # Copy .env file from Jenkins credentials to workspace
-                    cp $DJANGO_ENV_STAGING .env                  
+                    cp $DJANGO_ENV_STAGING .env.staging                  
 
                     # Stop existing containers
                     # docker compose down
 
                     # Start all services
-                    docker compose -f docker-compose-staging.yml up --build
+                    docker compose --env_file .env.staging -f docker-compose-staging.yml up --build
 
                     # Wait for db to be healthy
                     echo "Waiting for database..."
@@ -81,13 +81,13 @@ pipeline {
                        
                     sh '''
                     # Copy .env file from Jenkins credentials to workspace
-                    cp $DJANGO_ENV_PRODUCTION .env               
+                    cp $DJANGO_ENV_PRODUCTION .env.production              
 
                     # Stop existing containers
                     # docker compose down
 
                     # Start all services
-                    docker compose -f docker-compose-production.yml up -d --build
+                    docker compose --env_file .env.production -f docker-compose-production.yml up -d --build
 
                     # Wait for db to be healthy
                     echo "Waiting for database..."
@@ -116,7 +116,7 @@ pipeline {
         }
         always {
             echo '🧹 Cleaning up unused images...'
-            sh 'rm -f .env'
+            sh 'rm -f .env.*'
             //sh 'docker image prune -f'
         }
     }
