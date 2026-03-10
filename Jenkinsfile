@@ -36,8 +36,8 @@ pipeline {
             }
             steps {
                 echo '🚀 Deploying with Docker Compose...'
-
-                expression { return scm.branches[0].name == 'development' || env.GIT_BRANCH == 'origin/development' } {
+                expression { GIT_BRANCH == 'main' }
+                //expression { return scm.branches[0].name == 'development' || env.GIT_BRANCH == 'origin/development' } {
                        
                     sh '''
                     # Copy .env file from Jenkins credentials to workspace
@@ -65,7 +65,8 @@ pipeline {
         }
         stage('Deploy to production environment with Docker Compose') {
             when {
-                expression { return scm.branches[0].name == 'main' || env.GIT_BRANCH == 'origin/main' }
+                expression { GIT_BRANCH == 'main' }
+                //expression { return scm.branches[0].name == 'main' || env.GIT_BRANCH == 'origin/main' }
             }
             steps {
                 echo '🚀 Deploying with Docker Compose...'
