@@ -53,7 +53,7 @@ pipeline {
                     docker compose down
 
                     # Start all services
-                    docker compose up -d --build
+                    docker compose -f docker-compose-staging.yml up --build
 
                     # Wait for db to be healthy
                     echo "Waiting for database..."
@@ -87,7 +87,7 @@ pipeline {
                     docker compose down
 
                     # Start all services
-                    docker compose up -d --build
+                    docker compose -f docker-compose-production.yml up -d --build
 
                     # Wait for db to be healthy
                     echo "Waiting for database..."
