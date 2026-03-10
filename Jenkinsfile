@@ -50,11 +50,10 @@ pipeline {
                     cp $DJANGO_ENV_STAGING .env.staging                  
 
                     # Stop existing containers
-                    # docker compose down
+                    docker compose -f docker-compose-staging.yml down
 
                     # Start all services
-                    docker compose --env-file .env.staging -f docker-compose-staging.yml up --build
-
+                    docker compose --env-file .env.staging -f docker-compose-staging.yml up --build -d
 
                     # Wait for db to be healthy
                     echo "Waiting for database..."
@@ -85,11 +84,10 @@ pipeline {
                     cp $DJANGO_ENV_PRODUCTION .env.production              
 
                     # Stop existing containers
-                    # docker compose down
+                    docker compose -f docker-compose-production.yml down
 
                     # Start all services
-                    docker compose --env-file .env.production -f docker-compose-production.yml up --build
-
+                    docker compose --env-file .env.production -f docker-compose-production.yml up --build -d
 
                     # Wait for db to be healthy
                     echo "Waiting for database..."
