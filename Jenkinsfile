@@ -6,10 +6,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo '📥 Checking out code...'
-                checkout scm
-
-                echo "📂 Project branch: $BRANCH_NAME"
-                
+                checkout scm                
             }
         }
 
@@ -40,7 +37,7 @@ pipeline {
             steps {
                 echo '🚀 Deploying with Docker Compose...'
 
-                withCredentials([file(credentialsId: 'Django_ENV_STAGING', variable: 'DJANGO_ENV_STAGING')]) {
+                expression { return scm.branches[0].name == 'development' || env.GIT_BRANCH == 'origin/development' } {
                        
                     sh '''
                     # Copy .env file from Jenkins credentials to workspace
@@ -68,7 +65,7 @@ pipeline {
         }
         stage('Deploy to production environment with Docker Compose') {
             when {
-                expression { env.BRANCH_NAME == 'main' }
+                expression { return scm.branches[0].name == 'main' || env.GIT_BRANCH == 'origin/main' }
             }
             steps {
                 echo '🚀 Deploying with Docker Compose...'
