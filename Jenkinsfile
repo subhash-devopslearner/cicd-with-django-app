@@ -30,31 +30,67 @@ pipeline {
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Deploy to staging environment with Docker Compose') {
+            when {
+                branch 'development'
+            }
             steps {
                 echo '🚀 Deploying with Docker Compose...'
 
-                withCredentials([file(credentialsId: 'Django_ENV_FILE', variable: 'DJANGO_ENV')]) {
+                withCredentials([file(credentialsId: 'Django_ENV_STAGING', variable: 'DJANGO_ENV_STAGING')]) {
                        
                     sh '''
                     # Copy .env file from Jenkins credentials to workspace
-                    cp $DJANGO_ENV .env                  
+                    cp $DJANGO_ENV_STAGING .env                  
 
                     # Stop existing containers
-                    docker-compose down
+                    docker compose down
 
                     # Start all services
-                    docker-compose up -d --build
+                    docker compose up -d --build
 
                     # Wait for db to be healthy
                     echo "Waiting for database..."
                     sleep 10
 
                     # Run migrations
-                    docker-compose exec -T web python manage.py migrate
+                    docker compose exec -T web python manage.py migrate
 
                     # Collect static files
-                    docker-compose exec -T web python manage.py collectstatic --noinput
+                    docker compose exec -T web python manage.py collectstatic --noinput
+                '''
+                }
+                
+            }
+        }
+        stage('Deploy to production environment with Docker Compose') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo '🚀 Deploying with Docker Compose...'
+
+                withCredentials([file(credentialsId: 'Django_ENV_PRODUCTION', variable: 'DJANGO_ENV_PRODUCTION')]) {
+                       
+                    sh '''
+                    # Copy .env file from Jenkins credentials to workspace
+                    cp $DJANGO_ENV_PRODUCTION .env                  
+
+                    # Stop existing containers
+                    docker compose down
+
+                    # Start all services
+                    docker compose up -d --build
+
+                    # Wait for db to be healthy
+                    echo "Waiting for database..."
+                    sleep 10
+
+                    # Run migrations
+                    docker compose exec -T web python manage.py migrate
+
+                    # Collect static files
+                    docker compose exec -T web python manage.py collectstatic --noinput
                 '''
                 }
                 
