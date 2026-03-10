@@ -32,11 +32,11 @@ pipeline {
 
         stage('Deploy to staging environment with Docker Compose') {
             when {
-                expression { env.BRANCH_NAME == 'development' }
+                expression { env.BRANCH_NAME == 'origin/development' }
             }
             steps {
                 echo '🚀 Deploying with Docker Compose...'
-                expression { GIT_BRANCH == 'main' }
+                
                 //expression { return scm.branches[0].name == 'development' || env.GIT_BRANCH == 'origin/development' } {
                        
                     sh '''
@@ -65,7 +65,7 @@ pipeline {
         }
         stage('Deploy to production environment with Docker Compose') {
             when {
-                expression { GIT_BRANCH == 'main' }
+                expression { GIT_BRANCH == 'origin/main' }
                 //expression { return scm.branches[0].name == 'main' || env.GIT_BRANCH == 'origin/main' }
             }
             steps {
