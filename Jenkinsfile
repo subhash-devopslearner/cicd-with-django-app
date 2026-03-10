@@ -43,11 +43,11 @@ pipeline {
             steps {
                 echo '🚀 Deploying with Docker Compose...'
                 
-                withCredentials([file(credentialsId: 'Django_ENV_PRODUCTION', variable: 'DJANGO_ENV_PRODUCTION')]) {
+                withCredentials([file(credentialsId: 'Django_ENV_STAGING', variable: 'DJANGO_ENV_STAGING')]) {
                        
                     sh '''
                     # Copy .env file from Jenkins credentials to workspace
-                    cp $DJANGO_ENV_STAGING ./.env                  
+                    cp $DJANGO_ENV_STAGING .env                  
 
                     # Stop existing containers
                     docker compose down
@@ -81,7 +81,7 @@ pipeline {
                        
                     sh '''
                     # Copy .env file from Jenkins credentials to workspace
-                    cp $DJANGO_ENV_PRODUCTION ./.env               
+                    cp $DJANGO_ENV_PRODUCTION .env               
 
                     # Stop existing containers
                     docker compose down
