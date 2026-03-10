@@ -47,7 +47,7 @@ pipeline {
                        
                     sh '''
                     # Copy .env file from Jenkins credentials to workspace
-                    cp $DJANGO_ENV_STAGING .env                  
+                    cp $DJANGO_ENV_STAGING ./.env                  
 
                     # Stop existing containers
                     docker compose down
@@ -81,7 +81,7 @@ pipeline {
                        
                     sh '''
                     # Copy .env file from Jenkins credentials to workspace
-                    cp $DJANGO_ENV_PRODUCTION .env                  
+                    cp $DJANGO_ENV_PRODUCTION ./.env               
 
                     # Stop existing containers
                     docker compose down
@@ -112,7 +112,7 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed!'
-            sh 'docker-compose logs'
+            sh 'docker compose logs'
         }
         always {
             echo '🧹 Cleaning up unused images...'
