@@ -56,8 +56,16 @@ pipeline {
                     docker compose -f docker-compose-staging.yml --env-file .env.staging up --build -d
 
                     # Wait for db to be healthy
-                    echo "Waiting for database..."
-                    sleep 10
+                    # echo "Waiting for database..."
+                    # sleep 10
+
+                    echo "Waiting for database to be healthy..."
+                    until docker compose -f docker-compose-staging.yml \
+                        exec -T db pg_isready -U $DB_USER; do
+                        echo "Still waiting..."
+                        sleep 2
+                    done
+                    echo "Database ready! ✅"
 
                     # Run migrations                    
                     docker compose -f docker-compose-staging.yml --env-file .env.staging exec -T web python manage.py migrate
@@ -112,13 +120,19 @@ pipeline {
             echo '✅ Pipeline passed! App is live!'
         }
         failure {
-            echo '❌ Pipeline failed!'
-            //sh 'docker compose logs'
+            echo '❌ Pipeline failed! Check logs for details.'
+            if (env.GIT_BRANCH == 'origin/development') {
+                echo '📋 Staging logs:'
+                sh 'docker compose -f docker-compose-staging.yml logs --tail=50'
+            } else if (env.GIT_BRANCH == 'origin/main') {
+                echo '📋 Production logs:'
+                sh 'docker compose -f docker-compose-production.yml logs --tail=50'
+            }            
         }
         always {
             echo '🧹 Cleaning up unused images...'
-            sh 'rm -f .env.*'
-            //sh 'docker image prune -f'
+            sh 'rm -f .env.* || true' // Clean up .env files
+            sh 'docker image prune -f || true' // Clean up dangling images
         }
-    }
+    }    
 }
