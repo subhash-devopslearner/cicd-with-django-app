@@ -130,6 +130,7 @@ pipeline {
                     sh 'docker compose -f docker-compose-production.yml logs --tail=50'
                 }            
             }
+        }
         always {
             echo '🧹 Cleaning up unused images...'
             sh 'rm -f .env.* || true' // Clean up .env files
