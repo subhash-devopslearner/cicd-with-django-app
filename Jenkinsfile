@@ -121,14 +121,15 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed! Check logs for details.'
-            if (env.GIT_BRANCH == 'origin/development') {
-                echo '📋 Staging logs:'
-                sh 'docker compose -f docker-compose-staging.yml logs --tail=50'
-            } else if (env.GIT_BRANCH == 'origin/main') {
-                echo '📋 Production logs:'
-                sh 'docker compose -f docker-compose-production.yml logs --tail=50'
-            }            
-        }
+            steps {
+                if (env.GIT_BRANCH == 'origin/development') {
+                    echo '📋 Staging logs:'
+                    sh 'docker compose -f docker-compose-staging.yml logs --tail=50'
+                } else if (env.GIT_BRANCH == 'origin/main') {
+                    echo '📋 Production logs:'
+                    sh 'docker compose -f docker-compose-production.yml logs --tail=50'
+                }            
+            }
         always {
             echo '🧹 Cleaning up unused images...'
             sh 'rm -f .env.* || true' // Clean up .env files
