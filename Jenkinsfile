@@ -121,7 +121,7 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed! Check logs for details.'
-            scipt {
+            script {
                 if (env.GIT_BRANCH == 'origin/development') {
                     echo '📋 Staging logs:'
                     sh 'docker compose -f docker-compose-staging.yml logs --tail=50'
