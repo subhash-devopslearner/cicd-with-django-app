@@ -50,7 +50,7 @@ pipeline {
                     cp $DJANGO_ENV_STAGING .env.staging                  
 
                     # Stop existing containers
-                    docker compose -f docker-compose-staging.yml down
+                    docker compose --env-file .env.staging -f docker-compose-staging.yml down
 
                     # Start all services
                     docker compose --env-file .env.staging -f docker-compose-staging.yml up --build -d
@@ -60,10 +60,10 @@ pipeline {
                     sleep 10
 
                     # Run migrations
-                    docker compose exec -T web python manage.py migrate
+                    docker compose exec --env-file .env.staging -T web python manage.py migrate
 
                     # Collect static files
-                    docker compose exec -T web python manage.py collectstatic --noinput
+                    docker compose exec --env-file .env.staging -T web python manage.py collectstatic --noinput
                     '''
                 }
             }
@@ -84,7 +84,7 @@ pipeline {
                     cp $DJANGO_ENV_PRODUCTION .env.production              
 
                     # Stop existing containers
-                    docker compose -f docker-compose-production.yml down
+                    docker compose --env-file .env.production -f docker-compose-production.yml down
 
                     # Start all services
                     docker compose --env-file .env.production -f docker-compose-production.yml up --build -d
@@ -94,10 +94,10 @@ pipeline {
                     sleep 10
 
                     # Run migrations
-                    docker compose exec -T web python manage.py migrate
+                    docker compose exec --env-file .env.production -T web python manage.py migrate
 
                     # Collect static files
-                    docker compose exec -T web python manage.py collectstatic --noinput
+                    docker compose exec --env-file .env.production -T web python manage.py collectstatic --noinput
                 '''
                 }
                 
