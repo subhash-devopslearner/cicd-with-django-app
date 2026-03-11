@@ -60,7 +60,7 @@ pipeline {
                     # sleep 10
 
                     echo "Waiting for database to be healthy..."
-                    until docker compose -f docker-compose-staging.yml \
+                    until docker compose -f docker-compose-staging.yml --env-file .env.staging \
                         exec -T db pg_isready -U $DB_USER; do
                         echo "Still waiting..."
                         sleep 2
